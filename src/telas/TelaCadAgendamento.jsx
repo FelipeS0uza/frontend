@@ -11,10 +11,10 @@ export default function TelaCadastroAgendamentos(props){
     const [modoEdicao, setModoEdicao] = useState(false);
     const [agendamentoEmEdicao, setAgendamentoEmEdicao] = useState({
         registro: "",
-        visitante: "",
         data: "",
         horaEntrada: "",
-        horaSaida: ""
+        horaSaida: "",
+        visitantes: []
     });
     
 

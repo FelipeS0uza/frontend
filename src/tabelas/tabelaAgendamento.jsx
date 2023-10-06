@@ -4,25 +4,31 @@ import { urlBase2 } from "../utilitarios/definiçoes";
 
 export default function TabelaAgendamentos(props){
 
-    function filtrarAgendamentos(e){
-        const termoBusca = e.currentTarget.value;
-
-        fetch(urlBase2, {method:"GET"})
-        .then((resposta)=> {return resposta.json()})
-        .then((listaAgendamentos)=>{
-            if (Array.isArray(listaAgendamentos)){
-            const resultado = listaAgendamentos.filter((agendamento) => agendamento.visitante.toLowerCase().includes(termoBusca.toLowerCase()));
-            props.setAgendamentos(resultado);
+    function filtrarAgendamentos(e) {
+        const termoBusca = e.currentTarget.value.toLowerCase();
+      
+        fetch(urlBase2, { method: "GET" })
+          .then((resposta) => resposta.json())
+          .then((listaAgendamentos) => {
+            if (Array.isArray(listaAgendamentos)) {
+                const resultado = listaAgendamentos.filter((agendamento) => {
+                const data = agendamento.data.toLowerCase();
+                
+                return data.includes(termoBusca);
+              });
+      
+              props.setAgendamentos(resultado);
             }
-        });
-    }
+          });
+      }
     
     return(
         <Container className="mt-5 mb-5">
             <h3 className="d-flex justify-content-center align-items-center">Visitas Agendadas</h3>
             <Container className="d-flex mt-4 mb-3">
-                <Form.Control type="text"
+                <Form.Control type="date"
                                 id="termoBusca"
+                                placeholder="aaaa-mm-dd"
                                 onChange={filtrarAgendamentos}>
                 </Form.Control>
             </Container>
@@ -30,7 +36,7 @@ export default function TabelaAgendamentos(props){
             <thead>
                 <tr>
                 <th>Registro</th>
-                <th>Visitante</th>
+                <th>Visitantes</th>
                 <th>Data</th>
                 <th>Hora da Entrada</th>
                 <th>Hora de Saída</th>
@@ -40,10 +46,22 @@ export default function TabelaAgendamentos(props){
             <tbody>
             {
                 props.listaAgendamentos?.map((agendamento) => {
+
+                    let dataDMA = agendamento.data;
+                    let partesData = dataDMA.split("-");
+                    let dataFormatada = `${partesData[2]}/${partesData[1]}/${partesData[0]}`;
+
                     return <tr key={agendamento.registro}>
                             <td>{agendamento.registro}</td>
-                            <td>{agendamento.visitante}</td>
-                            <td>{agendamento.data}</td>
+                            <td>
+                                {agendamento.visitantes.map((visitante, index) => (
+                                    <span key={visitante.visitante.codigo}>
+                                        {visitante.visitante.nome} {visitante.visitante.sobrenome}
+                                        {index < agendamento.visitantes.length - 1 ? <br/>  : ''}
+                                    </span>
+                                ))}
+                            </td>
+                            <td>{dataFormatada}</td>
                             <td>{agendamento.horaEntrada}</td>
                             <td>{agendamento.horaSaida}</td>
                             <td>

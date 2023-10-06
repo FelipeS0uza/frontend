@@ -4,18 +4,22 @@ import { urlBase } from "../utilitarios/definiçoes";
 
 export default function TabelaVisitantes(props){
 
-    function filtrarVisitantes(e){
-        const termoBusca = e.currentTarget.value;
-
-        fetch(urlBase, {method:"GET"})
-        .then((resposta)=> {return resposta.json()})
-        .then((listaVisitantes)=>{
-            if (Array.isArray(listaVisitantes)){
-            const resultado = listaVisitantes.filter((visitante) => visitante.nome.toLowerCase().includes(termoBusca.toLowerCase()));
-            props.setVisitantes(resultado);
+    function filtrarVisitantes(e) {
+        const termoBusca = e.currentTarget.value.toLowerCase();
+      
+        fetch(urlBase, { method: "GET" })
+          .then((resposta) => resposta.json())
+          .then((listaVisitantes) => {
+            if (Array.isArray(listaVisitantes)) {
+              const resultado = listaVisitantes.filter((visitante) => {
+                const nomeCompleto = `${visitante.nome} ${visitante.sobrenome}`.toLowerCase();
+                return nomeCompleto.includes(termoBusca);
+              });
+              props.setVisitantes(resultado);
             }
-        });
-    }
+          });
+      }
+      
     
     return(
         <Container className="mt-5 mb-5">
@@ -44,6 +48,10 @@ export default function TabelaVisitantes(props){
             <tbody>
             {
                 props.listaVisitantes?.map((visitante) => {
+                    let dataDMA = visitante.dataCadastro;
+                    let partesData = dataDMA.split("-");
+                    let dataFormatada = `${partesData[2]}/${partesData[1]}/${partesData[0]}`;
+
                     return <tr key={visitante.codigo}>
                             <td>{visitante.codigo}</td>
                             <td>{visitante.nome}</td>
@@ -51,7 +59,7 @@ export default function TabelaVisitantes(props){
                             <td>{visitante.cpf}</td>
                             <td>{visitante.rg}</td>
                             <td>{visitante.telefone}</td>
-                            <td>{visitante.dataCadastro}</td>
+                            <td>{dataFormatada}</td>
                             <td>{visitante.codCategoria.descricao}</td>
                             <td>{visitante.observacao}</td>
                             <td>
@@ -76,7 +84,6 @@ export default function TabelaVisitantes(props){
                 }} variant="primary">Cadastrar</Button>
             </Container>
             
-
         </Container>
   );
 }

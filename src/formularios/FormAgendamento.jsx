@@ -4,26 +4,28 @@ import Col from 'react-bootstrap/Col';
 import Form from 'react-bootstrap/Form';
 import Row from 'react-bootstrap/Row';
 import { urlBase, urlBase2 } from '../utilitarios/definiçoes';
-import BarraBusca from '../utilitarios/barraBusca';
+import CaixaSelecao from '../utilitarios/Combobox';
+import TabelaVisitantesSelecionados from './tabelaVisitantesSelecionados';
 
 const boxcad_style = {
   padding: '2px',
   borderRadius: '10px',
   border: '2px solid black',
-  width: '380px',
+  width: '350px',
 }
 
 const boxcadall_style = {
   padding: '5px',
   borderRadius: '10px',
   border: '3px solid black',
-  height: '610px'
+  height: '710px'
 }
 
 export default function FormAgendamento(props) {
   const [validated, setValidated] = useState(false);
   const [agendamento, setAgendamento] = useState(props.agendamento);
   const [visitanteSelecionado, setVisitanteSelecionado] = useState({});
+  const [listaVisitantesSelecionados, setListaVisitantesSelecionados]= useState([]);
 
   function manipularMudanca(e) {
     const elemForm = e.currentTarget;
@@ -65,13 +67,24 @@ export default function FormAgendamento(props) {
       event.stopPropagation();
     } else {
         if(!props.modoEdicao){
-          const agendamentoComVisitante = {...agendamento, visitante: visitanteSelecionado};
+          let listaVisitante = [];
+          for(const visitante of listaVisitantesSelecionados){
+            listaVisitante.push({
+              visitante:{codigo: visitante.codigo}
+            })
+          }
           fetch(urlBase2, {
             method: "POST",
             headers: {
               "Content-Type": "application/json"
             },
-            body: JSON.stringify(agendamentoComVisitante),
+            body: JSON.stringify({
+              "registro"    : agendamento.registro,
+              "data"        : agendamento.data,
+              "horaEntrada" : agendamento.horaEntrada,
+              "horaSaida"   : agendamento.horaSaida,
+              "visitantes"  : listaVisitante
+            }),
           })
             .then((resposta) => {
               return resposta.json();
@@ -113,18 +126,7 @@ export default function FormAgendamento(props) {
     }
     setValidated(true);
   }
-  
 
-  let [listaVisitas, setListaVisitas] = useState([]);
-
-  useEffect(()=>{
-    fetch(urlBase, {method: "GET"})
-    .then((resposta)=>{
-      return resposta.json();
-    }).then((dados)=>{
-      setListaVisitas(dados);
-    })
-  },[])
 
   return (
     <Form className='mt-5' id='cadastroVisitas' noValidate validated={validated} onSubmit={handleSubmit} style={boxcadall_style}>
@@ -133,7 +135,7 @@ export default function FormAgendamento(props) {
       <div className='d-flex justify-content-center'><Form.Label className="fs-3 justify-content-center d-flex" style={boxcad_style}>Agendamento de Visitas</Form.Label></div>
       <hr />
       <Row className="mb-3">
-      <Form.Group as={Col} md="4">
+        <Form.Group as={Col} md="3">
           <Form.Label>Número de Registro</Form.Label>
           <Form.Control
             placeholder="Será gerado após agendar"
@@ -142,25 +144,6 @@ export default function FormAgendamento(props) {
               id="registro" />
         </Form.Group>
 
-
-
-        <Form.Group as={Col} md="6">
-          <Form.Label>Visitante</Form.Label>
-          <BarraBusca placeHolder={'Informe o nome do Visitante'}
-                  dados={listaVisitas}
-                  campoChave={"cpf"}
-                  campoBusca={"nome"}
-                  funcaoSelecao={(item) => {
-                    setVisitanteSelecionado(item.nome);
-                  }}
-                  valor={setVisitanteSelecionado}/>
-        </Form.Group>
-        </Row>
-
-        
-
-
-        <Row>
         <Form.Group as={Col} md="3">
           <Form.Label>Data</Form.Label>
           <Form.Control type="date"
@@ -174,8 +157,7 @@ export default function FormAgendamento(props) {
             Informe uma data válida!
           </Form.Control.Feedback>
         </Form.Group>
-
-
+      
         <Form.Group as={Col} md="3">
           <Form.Label>Hora de Entrada</Form.Label>
           <Form.Control
@@ -205,6 +187,68 @@ export default function FormAgendamento(props) {
           </Form.Control.Feedback>
         </Form.Group>
       </Row>
+      <br/>
+
+      <Row>
+        <Form.Group as={Col} md="6">
+            <Form.Label>Visitante</Form.Label>
+            <CaixaSelecao endFonteDados={urlBase}
+                          campoChave={"codigo"}
+                          campoExibicao={"nome"}
+                          funcaoSelecao={setVisitanteSelecionado} />
+        </Form.Group>
+      </Row>
+      <br/>
+      <Row>
+        <Col md={1}>
+          <Form.Label>Código</Form.Label>
+          <Form.Control type="text"
+                        value={visitanteSelecionado.codigo}
+                        name="codigo"
+                        disabled />
+        </Col>
+        <Col md={2}>
+          <Form.Label>Nome</Form.Label>
+          <Form.Control type="text"
+                        value={visitanteSelecionado.nome}
+                        name="nome"
+                        disabled />
+        </Col>
+        <Col md={2}>
+          <Form.Label>Sobrenome</Form.Label>
+          <Form.Control type="text"
+                        value={visitanteSelecionado.sobrenome}
+                        name="sobrenome"
+                        disabled />
+        </Col>
+        <Col md={2}>
+          <Form.Label>CPF</Form.Label>
+          <Form.Control type="text"
+                        value={visitanteSelecionado.cpf}
+                        name="cpf"
+                        disabled />
+        </Col>
+        <Col md={1}>
+          <br />
+          <Button onClick={()=>{
+            setListaVisitantesSelecionados([...listaVisitantesSelecionados, visitanteSelecionado])
+          }}>
+            <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" className="bi bi-plus-circle-fill" viewBox="0 0 16 16">
+              <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z"/>
+            </svg>
+          </Button>
+        </Col>
+      </Row>
+      <br/>
+      <Row>
+        <TabelaVisitantesSelecionados listaVisitantes={listaVisitantesSelecionados}
+                                      dadosAgendamento={agendamento}
+                                      setAgendamento={setAgendamento}
+                                      setListaVisitantes={setListaVisitantesSelecionados} />
+      </Row>
+
+
+
       <br/>
       <Form.Group className="mb-3">
         <Form.Check
