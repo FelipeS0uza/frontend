@@ -1,6 +1,8 @@
 import { Table, Button, Form, Container } from "react-bootstrap";
 import { urlBase3 } from "../utilitarios/definiçoes";
-
+import "./global.css";
+import Ajuda from "../utilitarios/ajuda";
+import { AjudaCategorias } from "../utilitarios/textosDeAjuda";
 
 export default function TabelaCategorias(props){
 
@@ -16,9 +18,16 @@ export default function TabelaCategorias(props){
             }
         });
     }
+
+    function imprimir(){
+        window.print();
+    }
     
     return(
         <Container className="mt-5 mb-5">
+            <div id="btn">
+                <Ajuda texto={AjudaCategorias}/>
+            </div>
             <h3 className="d-flex justify-content-center align-items-center">Categorias cadastradas</h3>
             <Container className="d-flex mt-4 mb-3">
                 <Form.Control type="text"
@@ -28,21 +37,21 @@ export default function TabelaCategorias(props){
             </Container>
             <Table striped bordered hover>
             <thead>
-                <tr>
+                <tr id="linha">
                 <th>Código</th>
                 <th>Descrição</th>
                 <th>Abrangentes</th>
-                <th>Ações</th>
+                <th id="btn">Ações</th>
                 </tr>
             </thead>
             <tbody>
             {
                 props.listaCategorias?.map((categoria) => {
-                    return <tr key={categoria.codigoCat}>
+                    return <tr key={categoria.codigoCat} id="linha">
                             <td>{categoria.codigoCat}</td>
                             <td>{categoria.descricao}</td>
                             <td>{categoria.abrangentes}</td>
-                            <td>
+                            <td id="btn">
                                 <div className="d-flex">
                                     <Button variant="info" onClick={()=>{ props.editarCategoria(categoria) }}> <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-pencil" viewBox="0 0 16 16">
                                                 <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/>
@@ -58,8 +67,10 @@ export default function TabelaCategorias(props){
             
             </tbody>
             </Table>
-            <Container className="d-flex justify-content-end align-items-center mt-5">
-                <Button onClick={() => {
+            <Container className="d-flex justify-content-between mt-5">
+                <Button id="btn" onClick={imprimir} 
+                variant="info">Relatório</Button>
+                <Button id="btn" onClick={() => {
                     props.exibirTabela(false);
                 }} variant="primary">Cadastrar</Button>
             </Container>

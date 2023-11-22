@@ -18,7 +18,7 @@ export default function Menu(props) {
 
     return (
         <Navbar style={navbarStyle} bg="black" variant="dark" expand="lg">
-            <Container >
+            <Container id="menu">
                 
                 <Navbar.Toggle aria-controls="basic-navbar-nav" />
                 <Navbar.Collapse id="basic-navbar-nav">

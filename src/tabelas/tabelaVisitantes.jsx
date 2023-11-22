@@ -1,5 +1,8 @@
 import { Table, Button, Form, Container } from "react-bootstrap";
 import { urlBase } from "../utilitarios/definiçoes";
+import "./global.css";
+import Ajuda from "../utilitarios/ajuda";
+import { AjudaVisitantes } from "../utilitarios/textosDeAjuda";
 
 
 export default function TabelaVisitantes(props){
@@ -19,10 +22,17 @@ export default function TabelaVisitantes(props){
             }
           });
       }
+
+      function imprimir() {
+        window.print();
+      }
       
     
     return(
         <Container className="mt-5 mb-5">
+          <div id="btn">
+            <Ajuda texto={AjudaVisitantes}/>
+          </div>
             <h3 className="d-flex justify-content-center align-items-center">Visitantes cadastrados</h3>
             <Container className="d-flex mt-4 mb-3">
                 <Form.Control type="text"
@@ -30,9 +40,9 @@ export default function TabelaVisitantes(props){
                                 onChange={filtrarVisitantes}>
                 </Form.Control>
             </Container>
-            <Table striped bordered hover>
+            <Table striped bordered hover id="tabela">
             <thead>
-                <tr>
+                <tr id="linha">
                 <th>Código</th>
                 <th>Nome</th>
                 <th>Sobrenome</th>
@@ -42,7 +52,7 @@ export default function TabelaVisitantes(props){
                 <th>Data de cadastro</th>
                 <th>Categoria</th>
                 <th>Observações</th>
-                <th>Ações</th>
+                <th id="btn">Ações</th>
                 </tr>
             </thead>
             <tbody>
@@ -52,7 +62,7 @@ export default function TabelaVisitantes(props){
                     let partesData = dataDMA.split("-");
                     let dataFormatada = `${partesData[2]}/${partesData[1]}/${partesData[0]}`;
 
-                    return <tr key={visitante.codigo}>
+                    return <tr key={visitante.codigo} id="linha">
                             <td>{visitante.codigo}</td>
                             <td>{visitante.nome}</td>
                             <td>{visitante.sobrenome}</td>
@@ -62,7 +72,7 @@ export default function TabelaVisitantes(props){
                             <td>{dataFormatada}</td>
                             <td>{visitante.codCategoria.descricao}</td>
                             <td>{visitante.observacao}</td>
-                            <td>
+                            <td id="btn">
                                 <div className="d-flex">
                                     <Button variant="info" onClick={()=>{ props.editarVisitante(visitante) }}> <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-pencil" viewBox="0 0 16 16">
                                                 <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/>
@@ -78,10 +88,15 @@ export default function TabelaVisitantes(props){
             
             </tbody>
             </Table>
-            <Container className="d-flex justify-content-end align-items-center mt-5">
-                <Button onClick={() => {
-                    props.exibirTabela(false);
-                }} variant="primary">Cadastrar</Button>
+            <Container className="d-flex justify-content-between mt-5">
+                    <Button id="btn" onClick={imprimir}
+                    variant="info">Relatório</Button>
+                
+                    <Button id="btn" onClick={() => {
+                        props.exibirTabela(false);
+                    }} variant="primary">Cadastrar</Button>
+                
+
             </Container>
             
         </Container>
