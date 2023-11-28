@@ -23,6 +23,22 @@ export default function TabelaVisitantes(props){
           });
       }
 
+      function filtrarVisitantesCat(e) {
+        const termoBusca2 = e.currentTarget.value.toLowerCase();
+      
+        fetch(urlBase, { method: "GET" })
+          .then((resposta) => resposta.json())
+          .then((listaVisitantes) => {
+            if (Array.isArray(listaVisitantes)) {
+              const resultado = listaVisitantes.filter((visitante) => {
+                const categoria = visitante.codCategoria.descricao.toLowerCase();
+                return categoria.includes(termoBusca2);
+              });
+              props.setVisitantes(resultado);
+            }
+          });
+      }
+
       function imprimir() {
         window.print();
       }
@@ -37,8 +53,16 @@ export default function TabelaVisitantes(props){
             <Container className="d-flex mt-4 mb-3">
                 <Form.Control type="text"
                                 id="termoBusca"
+                                placeholder="Pesquisar pelo nome"
                                 onChange={filtrarVisitantes}>
                 </Form.Control>
+                <Form.Control type="text"
+                                id="termoBusca2"
+                                placeholder="Filtrar pela categoria"
+                                onChange={filtrarVisitantesCat}
+                                className="ms-5">
+                </Form.Control>
+                
             </Container>
             <Table striped bordered hover id="tabela">
             <thead>
